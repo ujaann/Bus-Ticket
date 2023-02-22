@@ -259,7 +259,7 @@ def signup_window():
             register_function(vals)
         except Exception as exc:
             print(exc)
-            messagebox.showerror("Invalid Username","Please try again")
+            messagebox.showerror("Invalid","Please try again")
             username.delete(0,END)
             password.delete(0,END)
             contact_no.delete(0,END)
