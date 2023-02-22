@@ -100,6 +100,8 @@ def update_ticket(uid,ticket_id):
     def inserting_tickt_editor():
         c=conn.cursor()
         try:
+            if starting_editor.get()=="From" or date_editor.get()=="" or ending_editor.get()=="To":
+                raise Exception
             c.execute("""UPDATE TICKET_RECORDS SET
             date=:dat,
             to_=:strt,
@@ -170,22 +172,28 @@ def update_ticket(uid,ticket_id):
 
 def run_code(username):
     def inserting_tickt():
-        values=[dateEntry.get(),startingoptions.get(),endingoptions.get()]
-        conn=sqlite3.connect("project.db")
-        c=conn.cursor()
-        c.execute("SELECT * FROM TICKET_RECORDS ORDER BY ticket_id DESC LIMIT 1;")
-        last_entry=c.fetchone()
-        last_entryList=list(last_entry)
-        print(last_entryList)
-        lastUser=[last_entryList[0]+1]
-            # to maintain primary key we only add values with id in increasing order    
-            # so we increment by one to add after last entry
-        values=tuple(lastUser+values+[uid])
-        conn.commit()
-        c.execute("INSERT INTO TICKET_RECORDS VALUES"+str(values)+'')
-        conn.commit()
-        conn.close()
-        creation_panel.destroy()
+        try:
+            values=[dateEntry.get(),startingoptions.get(),endingoptions.get()]
+            if values[0]=="" or values[1]=="From" or values[2]=="To":
+                raise Exception
+            conn=sqlite3.connect("project.db")
+            c=conn.cursor()
+            c.execute("SELECT * FROM TICKET_RECORDS ORDER BY ticket_id DESC LIMIT 1;")
+            last_entry=c.fetchone()
+            last_entryList=list(last_entry)
+            print(last_entryList)
+            lastUser=[last_entryList[0]+1]
+                # to maintain primary key we only add values with id in increasing order    
+                # so we increment by one to add after last entry
+            values=tuple(lastUser+values+[uid])
+            conn.commit()
+            c.execute("INSERT INTO TICKET_RECORDS VALUES"+str(values)+'')
+            conn.commit()
+            conn.close()
+        except:
+            messagebox.showerror("invalid","value entered incorrectly")
+        finally:    
+                creation_panel.destroy()
 
     conn=sqlite3.connect("project.db")
     c=conn.cursor()
